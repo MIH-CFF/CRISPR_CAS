@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRISPR Toolkit - Gene Editing Target Prediction</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="logo-container">
+        <img src="logo.png" alt="CRISPR Toolkit Logo" class="logo" />
+        <h1>CRISPR Toolkit</h1>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#design" class="active">Guide Design</a></li>
+          <li><a href="#analysis">Off-Target Analysis</a></li>
+          <li><a href="#visualization">Visualization</a></li>
+          <li><a href="#documentation">Documentation</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="app-container">
+      <!-- Tool Selection Sidebar -->
+      <aside class="tool-sidebar">
+        <div class="tool-selection">
+          <h3>CRISPR Tools</h3>
+          <ul>
+            <li class="active" data-tool="design">Guide RNA Designer</li>
+            <li data-tool="scoring">Efficiency Scoring</li>
+            <li data-tool="offtarget">Off-Target Finder</li>
+            <li data-tool="compare">Compare Guides</li>
+          </ul>
+        </div>
+
+        <div class="history-panel">
+          <h3>Recent Analyses</h3>
+          <ul id="recent-analyses">
+            <!-- Dynamically populated -->
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <section class="main-content">
+        <!-- Guide RNA Design Panel -->
+        <div id="design-panel" class="content-panel active">
+          <h2>Guide RNA Design</h2>
+
+          <div class="input-section">
+            <div class="form-group">
+              <label for="cas-type">Cas Protein Variant:</label>
+              <select id="cas-type">
+                <option value="cas9">Cas9</option>
+                <option value="cas12a">Cas12a (Cpf1)</option>
+                <option value="cas13">Cas13</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="genome-input">Genome Sequence:</label>
+              <div class="input-options">
+                <button class="btn active" data-input-type="paste">
+                  Paste Sequence
+                </button>
+                <button class="btn" data-input-type="upload">
+                  Upload File
+                </button>
+                <button class="btn" data-input-type="database">
+                  Select from Database
+                </button>
+              </div>
+              <textarea
+                id="genome-input"
+                placeholder="Paste DNA sequence here or upload a FASTA file..."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="pam-sequence"
+                >PAM Sequence (or leave blank for default):</label
+              >
+              <input
+                type="text"
+                id="pam-sequence"
+                placeholder="e.g., NGG for SpCas9"
+              />
+            </div>
+
+            <button id="find-guides" class="btn primary">
+              Find Guide RNAs
+            </button>
+          </div>
+
+          <div class="results-section">
+            <div class="results-header">
+              <h3>Potential Guide RNAs</h3>
+              <div class="result-actions">
+                <button id="export-guides" class="btn">Export Results</button>
+                <button id="score-guides" class="btn primary">
+                  Score Guides
+                </button>
+              </div>
+            </div>
+
+            <div class="results-table-container">
+              <table id="guide-results">
+                <thead>
+                  <tr>
+                    <th>Select</th>
+                    <th>Position</th>
+                    <th>Guide Sequence</th>
+                    <th>PAM</th>
+                    <th>Strand</th>
+                    <th>GC Content</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Off-Target Analysis Panel -->
+        <div id="analysis-panel" class="content-panel">
+          <!-- Similar structure for off-target analysis -->
+        </div>
+
+        <!-- Visualization Panel -->
+        <div id="visualization-panel" class="content-panel">
+          <h2>Visualization</h2>
+          <div class="visualization-container">
+            <div id="genome-browser-view" class="visualization">
+              <!-- Genome browser visualization -->
+            </div>
+            <div id="efficiency-charts" class="visualization">
+              <!-- Efficiency scoring charts -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Properties Panel -->
+      <aside class="properties-panel">
+        <h3>Guide Properties</h3>
+        <div id="guide-properties">
+          <div class="property-group">
+            <h4>Sequence Information</h4>
+            <div class="property">
+              <span class="property-label">Guide Sequence:</span>
+              <span class="property-value" id="guide-seq">-</span>
+            </div>
+            <div class="property">
+              <span class="property-label">PAM Sequence:</span>
+              <span class="property-value" id="pam-seq">-</span>
+            </div>
+          </div>
+
+          <div class="property-group">
+            <h4>Efficiency Scores</h4>
+            <div class="property">
+              <span class="property-label">GC Content:</span>
+              <span class="property-value" id="gc-content">-</span>
+            </div>
+            <div class="property">
+              <span class="property-label">Thermodynamic Score:</span>
+              <span class="property-value" id="thermo-score">-</span>
+            </div>
+            <div class="property">
+              <span class="property-label">MIT Specificity:</span>
+              <span class="property-value" id="mit-score">-</span>
+            </div>
+          </div>
+
+          <div class="property-group">
+            <h4>Off-Target Summary</h4>
+            <div class="property">
+              <span class="property-label">Exact Matches:</span>
+              <span class="property-value" id="exact-matches">-</span>
+            </div>
+            <div class="property">
+              <span class="property-label">1-2 Mismatches:</span>
+              <span class="property-value" id="mismatches">-</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        CRISPR Toolkit - Open Source Bioinformatics Tool for Gene Editing Design
+      </p>
+      <div class="footer-links">
+        <a href="#">Documentation</a>
+        <a href="#">GitHub</a>
+        <a href="#">Contact</a>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
