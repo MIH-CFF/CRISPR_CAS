@@ -1,0 +1,17 @@
+crispr_toolkit/
+│
+├── app.py                  # Main application entry point
+├── static/                 # Static files (CSS, JS)
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       └── app.js
+├── templates/              # HTML templates
+│   └── index.html
+├── crispr/                 # Main toolkit package
+│   ├── __init__.py
+│   ├── guide_design.py     # Guide RNA design logic
+│   ├── scoring.py          # Efficiency scoring algorithms
+│   ├── offtarget.py        # Off-target analysis
+│   └── utils.py            # Utility functions
+└── requirements.txt        # Python dependencies
